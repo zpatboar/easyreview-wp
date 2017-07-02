@@ -13,7 +13,10 @@ Author URI: http://www.boarmanservice.com
  * Adds a shortcode to be used on a page
  */
 function easyreview_form( $atts ){
-    $formvalidated = easyreview_form_validated();
+    //Will be nice when WordPress stops adding slashes regardless of php.ini
+    $iPOST = stripslashes_deep($_POST);
+    $formvalidated = easyreview_form_validated($iPOST);
+    
     if ($formvalidated !== true){
         ob_start();
         require_once(__DIR__.'/tmpl/form.php');
@@ -26,23 +29,23 @@ function easyreview_form( $atts ){
 
 add_shortcode( 'easyreview_form', 'easyreview_form' );
 
-function easyreview_form_validated(){
+function easyreview_form_validated($iPOST){
     $errors = "";
-    if (!isset($_POST['q4oij32r'])){
+    if (!isset($iPOST['q4oij32r'])){
         return false;
     }
     
-    $name = sanitize_text_field($_POST['your_name']);
+    $name = sanitize_text_field($iPOST['your_name']);
     if ($name == ""){
         $errors .= "Please enter a Name<br />";
     }
     
-    $email = sanitize_email($_POST['your_email']);
+    $email = sanitize_email($iPOST['your_email']);
     if ($email == ""){
         $errors .= "Please enter a valid Email<br />";
     }
     
-    if ($_POST['q4oij32r'] != "4" && strtolower($_POST['q4oij32r']) != "four"){
+    if ($iPOST['q4oij32r'] != "4" && strtolower($iPOST['q4oij32r']) != "four"){
         $errors .= "Please enter what two plus two is<br />";
     }
     
