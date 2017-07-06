@@ -73,8 +73,36 @@ function easyreview_form_validated($iPOST){
         return $errors;
     }
     
-    return true;
+    $review_post = array(
+        'post_title' => $title,
+        'post_content' => $review,
+        'post_status' => 'pending',
+        'post_author' => 1,
+        'post_category' => array(get_option('easyreview_category')),
+        'meta_input' => array(
+            'reviewer_name' => $name,
+            'reviewer_email' => $email,
+            'reviewer_phone' => $phone,
+            'stars' => $stars
+            )
+    );
     
+    $post_id = (int) wp_insert_post($review_post);
+    
+    if ($post_id != 0 && $post_id >= 1){
+        $iPOST['apikey'] = get_option('easyreview_apikey');
+        $iPOST['site_ref_id'] = $post_id;
+        $iPOST['title'] = $title;
+        
+        $response = wp_remote_post( get_option('easyreview_server_url') , 
+            array(
+                'method' => 'POST',
+                'body' => $iPOST
+            )
+        );
+        
+        return true;
+    }
     
 }
 
