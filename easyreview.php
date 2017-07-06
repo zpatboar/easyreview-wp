@@ -88,7 +88,9 @@ function easyreview_plugin_menu(){
 function easyreview_plugin_admin(){
     if (isset($_POST['apikey'])){
         update_option("easyreview_apikey", stripslashes(sanitize_text_field($_POST['apikey'])));
+        update_option("easyreview_server_url", stripslashes(sanitize_text_field($_POST['server_url'])));
         update_option("easyreview_thank_you", stripslashes(sanitize_textarea_field($_POST['thank_you'])));
+        update_option("easyreview_category", (int) $_POST['review_cat']);
         ?>
         <div id="setting-error-settings_updated" class="updated settings-error"> 
             <p><strong>Configuration saved.</strong></p>
@@ -99,8 +101,19 @@ function easyreview_plugin_admin(){
     <div class="wrap">
         <h2>EasyReview Configuration</h2>
         <form method="POST">
+            <label for="apikey">Review Category</label><br />
+            <select name="review_cat">
+                <option> - Select Review Category - </option>
+            <?php $categories = get_categories(array('orderby'=>'name', 'order' => 'ASC', 'hide_empty' => false)); 
+            foreach ($categories as $cat){
+                echo '<option value="'.$cat->cat_ID.'" '.($cat->cat_ID == get_option('easyreview_category') ? "selected" : "").'>'.$cat->cat_name.'</option>';
+            }
+            ?>
+            </select><br />
             <label for="apikey">EasyReview API Key</label><br />
             <input name="apikey" value="<?php echo get_option('easyreview_apikey');?>"><br />
+            <label for="apikey">EasyReview Server URL</label><br />
+            <input name="server_url" value="<?php echo get_option('easyreview_server_url');?>"><br />
             <label for="thank_you">Thank You Page Content</label><br />
             <?php wp_editor(get_option("easyreview_thank_you"),"thank_you"); ?>
             <p>
