@@ -77,7 +77,7 @@ function easyreview_form_validated($iPOST){
         'post_title' => $title,
         'post_content' => $review,
         'post_status' => 'pending',
-        'post_author' => 1,
+        'post_author' => 0,
         'post_category' => array(get_option('easyreview_category')),
         'meta_input' => array(
             'reviewer_name' => $name,
@@ -150,4 +150,29 @@ function easyreview_plugin_admin(){
         </form>
     </div>
     <?php
+}
+
+
+add_action('wp_ajax_easyreview_api', 'easyreview_plugin_api');
+add_action('wp_ajax_nopriv_easyreview_api', 'easyreview_plugin_api');
+
+function easyreview_plugin_api(){
+    $return = array();
+    
+    switch ($_POST['apiaction']){
+        case 'publish':
+            wp_publish_post( (int) $_POST['site_ref_id']);
+            $return['status'] = "SUCCESS"; 
+            break;
+        
+        case 'unpublish':
+            wp_update_post(array('ID' => (int) $_POST['site_ref_id'], 'post_status' => 'pending'));
+            $return['status'] = "SUCCESS"; 
+            break;
+        
+        default:
+            $return['status'] = "ERROR"; 
+    }
+    echo json_encode($return);
+    wp_die();
 }
