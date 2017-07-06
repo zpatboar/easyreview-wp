@@ -45,6 +45,26 @@ function easyreview_form_validated($iPOST){
         $errors .= "Please enter a valid Email<br />";
     }
     
+    $phone = sanitize_text_field($iPOST['your_phone']);
+    if ($phone == ""){
+        $errors .= "Please enter a Phone Number<br />";
+    }
+    
+    $stars = (int) $iPOST['stars'];
+    if ($stars == ""){
+        $errors .= "Please enter how Satisfied you are<br />";
+    }
+    
+    $title = sanitize_text_field($iPOST['title']);
+    if ($title == ""){
+        $title = "A Review from ".$name;
+    }
+    
+    $review = wp_kses_post($iPOST['review']);
+    if ($review == ""){
+        $errors .= "Please enter your Review<br />";
+    }
+    
     if ($iPOST['q4oij32r'] != "4" && strtolower($iPOST['q4oij32r']) != "four"){
         $errors .= "Please enter what two plus two is<br />";
     }
